@@ -2,7 +2,7 @@ services:
   - type: worker          # background worker (no HTTP port needed)
     name: videobot
     runtime: python
-    buildCommand: pip install -r requirements.txt
+    buildCommand: bash build.sh
     startCommand: python videobot/bot.py
     plan: free            # change to "starter" for production
     envVars:
