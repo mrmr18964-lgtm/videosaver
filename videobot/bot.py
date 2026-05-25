@@ -38,20 +38,15 @@ SUPPORTED_HINT = (
 def build_ydl_opts(out_tmpl: str) -> dict:
     return {
         "outtmpl": out_tmpl,
-        "format": "18/22/bestvideo[ext=mp4]+bestaudio[ext=m4a]/bestvideo+bestaudio/best",
-        "merge_output_format": "mp4",
-        "quiet": True,
-        "no_warnings": True,
+        "format": "best[ext=mp4]/best",
+        "quiet": False,
+        "no_warnings": False,
         "noplaylist": True,
         "socket_timeout": 60,
         "retries": 5,
         "fragment_retries": 5,
         "extractor_retries": 5,
         "ignoreerrors": False,
-        "postprocessors": [{
-            "key": "FFmpegVideoConvertor",
-            "preferedformat": "mp4",
-        }],
         "http_headers": {
             "User-Agent": (
                 "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
