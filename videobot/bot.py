@@ -38,21 +38,21 @@ SUPPORTED_HINT = (
 def build_ydl_opts(out_tmpl: str) -> dict:
     return {
         "outtmpl": out_tmpl,
-        "format": "bestvideo+bestaudio/best",
-        "postprocessors": [{"key": "FFmpegMergePost"}],
+        "format": "best",  # Let yt-dlp choose the best available format
         "quiet": False,
         "no_warnings": False,
         "noplaylist": True,
-        "socket_timeout": 60,
-        "retries": 5,
-        "fragment_retries": 5,
-        "extractor_retries": 5,
+        "socket_timeout": 120,
+        "retries": 10,
+        "fragment_retries": 10,
+        "extractor_retries": 10,
+        "skip_unavailable_fragments": True,
         "ignoreerrors": False,
         "http_headers": {
             "User-Agent": (
                 "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
                 "AppleWebKit/537.36 (KHTML, like Gecko) "
-                "Chrome/124.0.0.0 Safari/537.36"
+                "Chrome/130.0.0.0 Safari/537.36"
             )
         },
     }
