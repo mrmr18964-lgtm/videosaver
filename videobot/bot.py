@@ -77,8 +77,13 @@ def download_video(url: str, out_tmpl: str) -> dict:
     """Blocking download; returns yt-dlp info dict."""
     opts = build_ydl_opts(out_tmpl)
     with yt_dlp.YoutubeDL(opts) as ydl:
-        info = ydl.extract_info(url, download=True)
-        return info
+        try:
+            info = ydl.extract_info(url, download=True)
+            logger.info("Successfully downloaded: %s", info.get("title", "Unknown"))
+            return info
+        except Exception as e:
+            logger.error("Download error for %s: %s", url, str(e))
+            raise
 
 
 # ─── Handlers ────────────────────────────────────────────────────────────────
@@ -209,6 +214,16 @@ async def handle_non_url(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
     )
 
 
+async def error_handler(update: object, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """Handle errors"""
+    logger.error(msg="Exception while handling an update:", exc_info=context.error)
+    if isinstance(update, Update) and update.effective_message:
+        await update.effective_message.reply_text(
+            "❌ Xatolik yuz berdi. Qayta urinib ko'ring.",
+            parse_mode=ParseMode.HTML,
+        )
+
+
 # ─── URL filter ──────────────────────────────────────────────────────────────
 def is_url(text: str) -> bool:
     t = (text or "").strip().lower()
@@ -237,6 +252,7 @@ def main():
     app.add_handler(CommandHandler("help", cmd_help))
     app.add_handler(MessageHandler(URL_FILTER, handle_url))
     app.add_handler(MessageHandler(NON_URL_FILTER, handle_non_url))
+    app.add_error_handler(error_handler)
 
     logger.info("Bot starting…")
     app.run_polling(drop_pending_updates=True)
