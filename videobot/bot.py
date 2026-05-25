@@ -64,6 +64,7 @@ def build_ydl_opts(out_tmpl: str, fmt: str | None = None) -> dict:
 def download_video(url: str, out_tmpl: str) -> dict:
     """Blocking download; returns yt-dlp info dict."""
     format_fallbacks = [
+        "best[height<=720]/best",
         "bestvideo[height<=720]+bestaudio/best[height<=720]/best",
         "bestvideo+bestaudio/best",
         "best",
