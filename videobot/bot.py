@@ -38,7 +38,8 @@ SUPPORTED_HINT = (
 def build_ydl_opts(out_tmpl: str) -> dict:
     return {
         "outtmpl": out_tmpl,
-        "format": "best[ext=mp4]/best",
+        "format": "bestvideo+bestaudio/best",
+        "postprocessors": [{"key": "FFmpegMergePost"}],
         "quiet": False,
         "no_warnings": False,
         "noplaylist": True,
