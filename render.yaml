@@ -1,0 +1,12 @@
+services:
+  - type: worker          # background worker (no HTTP port needed)
+    name: videobot
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: python bot.py
+    plan: free            # change to "starter" for production
+    envVars:
+      - key: BOT_TOKEN
+        sync: false       # enter manually in Render dashboard
+      - key: MAX_FILE_MB
+        value: "50"
