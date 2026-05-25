@@ -35,10 +35,9 @@ SUPPORTED_HINT = (
 )
 
 # ─── yt-dlp options ─────────────────────────────────────────────────────────
-def build_ydl_opts(out_tmpl: str) -> dict:
-    return {
+def build_ydl_opts(out_tmpl: str, fmt: str | None = None) -> dict:
+    opts = {
         "outtmpl": out_tmpl,
-        "format": "bestvideo[height<=720]+bestaudio/best[height<=720]/best",
         "quiet": False,
         "no_warnings": False,
         "noplaylist": True,
@@ -48,6 +47,7 @@ def build_ydl_opts(out_tmpl: str) -> dict:
         "extractor_retries": 10,
         "skip_unavailable_fragments": True,
         "ignoreerrors": False,
+        "merge_output_format": "mp4",
         "http_headers": {
             "User-Agent": (
                 "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
@@ -56,6 +56,37 @@ def build_ydl_opts(out_tmpl: str) -> dict:
             )
         },
     }
+    if fmt:
+        opts["format"] = fmt
+    return opts
+
+
+def download_video(url: str, out_tmpl: str) -> dict:
+    """Blocking download; returns yt-dlp info dict."""
+    format_fallbacks = [
+        "bestvideo[height<=720]+bestaudio/best[height<=720]/best",
+        "bestvideo+bestaudio/best",
+        "best",
+    ]
+
+    last_error = None
+    for fmt in format_fallbacks:
+        opts = build_ydl_opts(out_tmpl, fmt=fmt)
+        with yt_dlp.YoutubeDL(opts) as ydl:
+            try:
+                info = ydl.extract_info(url, download=True)
+                logger.info("Downloaded with format %s: %s", fmt, info.get("title", "Unknown"))
+                return info
+            except yt_dlp.utils.DownloadError as e:
+                last_error = e
+                err_msg = str(e).splitlines()[-1]
+                logger.warning("DownloadError with format %s for %s: %s", fmt, url, err_msg)
+                if "Requested format is not available" in err_msg:
+                    continue
+                raise
+
+    logger.error("All format fallbacks failed for %s", url)
+    raise last_error if last_error is not None else RuntimeError("Download failed")
 
 
 # ─── Helpers ─────────────────────────────────────────────────────────────────
