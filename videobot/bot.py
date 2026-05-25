@@ -38,7 +38,7 @@ SUPPORTED_HINT = (
 def build_ydl_opts(out_tmpl: str) -> dict:
     return {
         "outtmpl": out_tmpl,
-        "format": "best",  # Let yt-dlp choose the best available format
+        "format": "bestvideo[height<=720]+bestaudio/best[height<=720]/best",
         "quiet": False,
         "no_warnings": False,
         "noplaylist": True,
