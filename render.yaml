@@ -3,7 +3,7 @@ services:
     name: videobot
     runtime: python
     buildCommand: pip install -r requirements.txt
-    startCommand: python bot.py
+    startCommand: python videobot/bot.py
     plan: free            # change to "starter" for production
     envVars:
       - key: BOT_TOKEN
